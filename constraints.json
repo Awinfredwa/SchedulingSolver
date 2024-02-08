@@ -1,0 +1,10 @@
+{
+    "dayStartTime": "8:30",
+    "dayEndTime": "15:30",
+    "schoolDaysPerWeek": 5,
+    "blocksPerDay": 5,
+    "blockLengthInMinuets": 90,
+    "lunchLengthInMinuets": 60,
+    "lunchBlockNumber": 3
+}
+

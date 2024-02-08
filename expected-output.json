@@ -1,0 +1,110 @@
+{
+    "label": "Schedule 1",
+    "days": [
+        {
+            "label": "Monday",
+            "blocks": [
+                {
+                    "label": "Block 1",
+                    "startTime": "8:30",
+                    "endTime": "10:00",
+                    "couseId": 0
+                },
+                {
+                    "label": "Block 2",
+                    "startTime": "10:00",
+                    "endTime": "11:30",
+                    "couseId": 0
+                },
+                {
+                    "label": "Block 3",
+                    "startTime": "11:30",
+                    "endTime": "13:00",
+                    "couseId": "Lunch"
+                },
+                {
+                    "label": "Block 4",
+                    "startTime": "13:00",
+                    "endTime": "14:30",
+                    "couseId": 0
+                },
+                {
+                    "label": "Block 5",
+                    "startTime": "14:30",
+                    "endTime": "16:00",
+                    "couseId": 0
+                }
+            ]
+        },
+        {
+            "label": "Tuesday",
+            "blocks": [
+                {
+                    "label": "Block 1",
+                    "startTime": "8:30",
+                    "endTime": "10:00",
+                    "couseId": 0
+                },
+                {
+                    "label": "Block 2",
+                    "startTime": "10:00",
+                    "endTime": "11:30",
+                    "couseId": 0
+                },
+                {
+                    "label": "Block 3",
+                    "startTime": "11:30",
+                    "endTime": "13:00",
+                    "couseId": "Lunch"
+                },
+                {
+                    "label": "Block 4",
+                    "startTime": "13:00",
+                    "endTime": "14:30",
+                    "couseId": 0
+                },
+                {
+                    "label": "Block 5",
+                    "startTime": "14:30",
+                    "endTime": "16:00",
+                    "couseId": 0
+                }
+            ]
+        },
+        {
+            "label": "Wednesday",
+            "blocks": [
+                {
+                    "label": "Block 1",
+                    "startTime": "8:30",
+                    "endTime": "10:00",
+                    "couseId": 0
+                },
+                {
+                    "label": "Block 2",
+                    "startTime": "10:00",
+                    "endTime": "11:30",
+                    "couseId": 0
+                },
+                {
+                    "label": "Block 3",
+                    "startTime": "11:30",
+                    "endTime": "13:00",
+                    "couseId": "Lunch"
+                },
+                {
+                    "label": "Block 4",
+                    "startTime": "13:00",
+                    "endTime": "14:30",
+                    "couseId": 0
+                },
+                {
+                    "label": "Block 5",
+                    "startTime": "14:30",
+                    "endTime": "16:00",
+                    "couseId": 0
+                }
+            ]
+        }
+    ]
+}
