@@ -1,5 +1,6 @@
 from ortools.sat.python import cp_model
 import json
+from Solver import create_course_schedule
 
 # classes to represent Student-preferences 
 class Student:
@@ -44,9 +45,9 @@ def load_courses(filename):
 
 
 # Load the students' preferences from 'students.json'
-students = load_students('student-preferences.json')
+studentStructs = load_students('student-preferences.json')
 # Load the courses from 'courses.json'
-courses = load_courses('courses.json')
+courseStructs = load_courses('courses.json')
 
 # Print data for testing
 # for course in courses:
@@ -67,5 +68,23 @@ num_courses_per_day = 4  # Excluding lunch block
 num_days = 5
 num_preferences_each = 4
 
-# create class/structs for the data
-# need student struct, preference struct, result struct
+
+
+students = []
+for i in range(num_students):
+    students.append(studentStructs[i].studentId)
+courses = []
+for i in range(num_courses):
+    courses.append(courseStructs[i].id)
+# we are only considering the students' first term preferences for now
+preferences = []
+for i in range(num_students):
+    preferences.append(studentStructs[i].terms[0].coursesPreferences)
+num_sections = []
+for i in range(num_courses):
+    num_sections.append(courseStructs[i].maxSections)
+section_capacity = []
+for i in range(num_courses):
+    section_capacity.append(courseStructs[i].maxSeats)
+
+create_course_schedule(students, courses, preferences, num_sections, section_capacity)
