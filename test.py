@@ -87,4 +87,6 @@ section_capacity = []
 for i in range(num_courses):
     section_capacity.append(courseStructs[i].maxSeats)
 
+
+
 create_course_schedule(students, courses, preferences, num_sections, section_capacity)

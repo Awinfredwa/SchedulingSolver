@@ -20,7 +20,7 @@ def create_course_schedule(students, courses, preferences, num_sections, section
             y[j, t] = solver.BoolVar(f'y[{j},{t}]')
 
     # Constraints
-    # 1. Each student is assigned to at most one set of preferred courses
+    # 1. Each student is assigned to exactly one set of preferred courses
     for i in range(len(students)):
         solver.Add(solver.Sum(x[i, k] for k in range(len(preferences[i]))) <= 1)
 
