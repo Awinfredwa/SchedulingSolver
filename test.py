@@ -1,6 +1,7 @@
 from ortools.sat.python import cp_model
 import json
-from Solver import create_course_schedule
+# from Solver import create_course_schedule
+from simpleSolver import simple_course_schedule
 
 # classes to represent Student-preferences 
 class Student:
@@ -87,4 +88,10 @@ section_capacity = []
 for i in range(num_courses):
     section_capacity.append(courseStructs[i].maxSeats)
 
-create_course_schedule(students, courses, preferences, num_sections, section_capacity)
+# create_course_schedule(students, courses, preferences, num_sections, section_capacity)
+simple_course_schedule(students, courses, preferences, section_capacity)
+# print("Students: ", students)
+# print("Courses: ", courses)
+# print("Preferences: ", preferences)
+# print("Num Sections: ", num_sections)
+# print("Section Capacity: ", section_capacity)

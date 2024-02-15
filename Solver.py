@@ -1,10 +1,8 @@
-from ortools.sat.python import cp_model
-from ortools.constraint_solver import pywrapcp
-
+from ortools.linear_solver import pywraplp
 
 def create_course_schedule(students, courses, preferences, num_sections, section_capacity):
     # Initialize the solver
-    solver = pywrapcp.Solver('SCIP')
+    solver = pywraplp.Solver.CreateSolver('SCIP')
 
     # Variables
     # Student Preference Assignment
@@ -16,7 +14,7 @@ def create_course_schedule(students, courses, preferences, num_sections, section
     # Course-Time Block Assignment
     y = {}
     for j in range(len(courses)):
-        for t in range(20):  # 20 time blocks
+        for t in range(4):  # 4 time blocks
             y[j, t] = solver.BoolVar(f'y[{j},{t}]')
 
     # Constraints
@@ -26,12 +24,12 @@ def create_course_schedule(students, courses, preferences, num_sections, section
 
     # 2. Each course is assigned to exactly one time block
     for j in range(len(courses)):
-        solver.Add(solver.Sum(y[j, t] for t in range(20)) == 1)
+        solver.Add(solver.Sum(y[j, t] for t in range(4)) == 1)
 
     # 3. Students can only take one course during each time block
     for i in range(len(students)):
-        for t in range(20):
-            solver.Add(solver.Sum(x[i, k] * y[j, t] for k in range(len(preferences[i])) for j in preferences[i][k]) <= 1)
+        for t in range(4):
+            solver.Add(solver.Sum(x[i, k] * y[k, t] for k in range(len(preferences[i]))) <= 1)
 
     # 4. Course capacities
     for j in range(len(courses)):
@@ -44,7 +42,7 @@ def create_course_schedule(students, courses, preferences, num_sections, section
     # Solve
     status = solver.Solve()
 
-    if status == pywrapcp.Solver.OPTIMAL:
+    if status == pywraplp.Solver.OPTIMAL:
         print('Solution:')
         for j in range(len(courses)):
             for t in range(4):
@@ -56,3 +54,20 @@ def create_course_schedule(students, courses, preferences, num_sections, section
                     print(f"Student {students[i]} assigned to preference set {k+1}: {preferences[i][k]}")
     else:
         print('No solution found.')
+
+# Example data setup
+students = ["Student 1", "Student 2", "Student 3", "Student 4"]
+courses = [1, 2, 3, 4, 5, 6, 7]
+preferences = [
+    [[2, 3, 6, 7], [1, 4, 5, 6], [2, 4, 6, 7], [1, 3, 5, 7]],  # Preferences for Student 1
+    [[1, 2, 3, 4], [2, 3, 5, 6], [1, 4, 6, 7], [3, 5, 6, 7]],  # Preferences for Student 2
+    [[1, 2, 3, 4], [2, 3, 5, 6], [1, 4, 6, 7], [3, 5, 6, 7]], 
+    [[1, 2, 3, 4], [2, 3, 5, 6], [1, 4, 6, 7], [3, 5, 6, 7]], 
+    [[1, 2, 3, 4], [2, 3, 5, 6], [1, 4, 6, 7], [3, 5, 6, 7]], 
+    [[1, 2, 3, 4], [2, 3, 5, 6], [1, 4, 6, 7], [3, 5, 6, 7]], 
+    [[1, 2, 3, 4], [2, 3, 5, 6], [1, 4, 6, 7], [3, 5, 6, 7]]
+]
+num_sections = [2, 3, 2, 2, 3, 2, 2]  # Number of sections for each course
+section_capacity = [30, 30, 30, 30, 30, 30, 30]  # Capacity for each section of each course
+
+create_course_schedule(students, courses, preferences, num_sections, section_capacity)
