@@ -21,7 +21,7 @@ def simple_course_schedule(students, courses, preferences, capacities):
         solver.Add(solver.Sum([x[i, k] for i in range(len(students)) for k in range(len(preferences[i])) if j in preferences[i][k]]) <= capacities[j])
 
     # Objective
-    # Maximize the total number of students attending their preferred set of courses
+    # Maximize the total number of students attending their first preferred set of courses
     solver.Maximize(solver.Sum([x[i, 0] for i in range(len(students))]))
 
     # Solve
