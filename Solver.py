@@ -89,7 +89,7 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
             for s in range(sections[c]):
                 for t in range(total_blocks):
                     if z[c, s, t].solution_value() > 0:
-                        print(f"Course {c+1} assigned to section {s+1} at time block {t+1}")
+                        print(f"Course {c+1} section {s+1} assigned at time block {t+1}")
         
     else:
         print('No solution found.')
