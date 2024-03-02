@@ -1,4 +1,4 @@
-# This is a progress recorder
+# This is a progress recording
 ## March 1st Update:
 **Some important files:**
 - Code of our main model setup including some testing samples: Solver.py
