@@ -40,33 +40,7 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
                 # This means if x[i, k] = 1 (preference set k is selected), exactly one section-time assignment must be selected for course c
                 # If x[i, k] = 0, no section-time assignment should be selected for course c
                 solver.Add(solver.Sum(section_time_assignments) == 1 if x[i, k] else 0)
-                
-    # Align the course section time block assignment variables with the student-section-time assignment variables
-    for i in range(len(students)):  # Iterate over each student
-        for c in range(len(courses)):  # Iterate over each course
-            for s in range(sections[c]):  # Iterate over each section of the course
-                for t in range(total_blocks):  # Iterate over each time block
-                    # Create a Boolean variable for each student-course-section-time combination
-                    y[i, c, s, t] = solver.BoolVar(f'y[{i},{c},{s},{t}]')
-
-    # course section time block assignment
-    z={}
-    for c in range(len(courses)):
-        for s in range(sections[c]):
-            for t in range(total_blocks):
-                z[c,s, t]= solver.BoolVar(f'z[{c},{s},{t}]')
-
-    # Align the student-section-time assignment variables with the student-preference assignment variables
-    for i in range(len(students)):  # Iterate over each student
-        for k in range(len(preferences[i])):  # Iterate over each preference set for student i
-            for c in preferences[i][k]:  # Iterate over each course in the k-th preference set
-                # Create a list to hold the section-time assignment variables for course c
-                section_time_assignments = [y[i, c-1, s, t] for s in range(sections[c-1]) for t in range(total_blocks)]
-                
-                # Add a constraint that ensures the sum of section-time assignments for course c is equal to x[i, k]
-                # This means if x[i, k] = 1 (preference set k is selected), exactly one section-time assignment must be selected for course c
-                # If x[i, k] = 0, no section-time assignment should be selected for course c
-                solver.Add(solver.Sum(section_time_assignments) == 1 if x[i, k] else 0)
+            
                 
     # Align the course section time block assignment variables with the student-section-time assignment variables
     for i in range(len(students)):  # Iterate over each student
@@ -94,12 +68,9 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
     # Course capacities 
     for i in range(len(courses)):
         for t in range(sections[i]):
-            #student_sum = []
-            for j in range(len(students)):
-                #student_sum.append(y[j, i, t, c] for c in range(total_blocks))
-                student_sum = [y[j, i, t, c] for c in range(total_blocks)]
+            student_sum = [y[j, i, t, c] for c in range(total_blocks) for j in range(len(students))]
             solver.Add(solver.Sum(student_sum) <= section_capacity[i]) 
-            #solver.Add(solver.Sum(student_sum) <= 10)             
+         
    
     
     # Each student is assigned to at most one set of preferred courses
