@@ -28,6 +28,7 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
             for t in range(total_blocks):
                 z[c, s, t] = solver.BoolVar(f'z[{c},{s},{t}]')
 
+    # TODO: Fix this constraint
     # Align the student-section-time assignment variables with the student-preference assignment variables
     for i in range(len(students)):  # Iterate over each student
         for k in range(len(preferences[i])):  # Iterate over each preference set for student i
@@ -147,7 +148,7 @@ preferences = [
     [[2, 3, 6, 7], [1, 4, 5, 6], [2, 4, 6, 7], [1, 3, 5, 7]],  # Preferences for Student 1
     [[1, 2, 3, 4], [2, 3, 5, 6], [1, 4, 6, 7], [3, 5, 6, 7]],  # Preferences for Student 2
     [[1, 2, 3, 4], [2, 3, 5, 6], [1, 4, 6, 7], [3, 5, 6, 7]], 
-    [[1, 2, 3, 4], [2, 3, 5, 6], [1, 4, 6, 7], [3, 5, 6, 7]], 
+    [[1, 2, 3, 4], [2, 3, 5, 6], [1, 4, 6, 7], [3, 5, 6, 7]]
 ]
 
 sections = [2, 3, 2, 2, 3, 2, 2]  # Number of sections for each course
