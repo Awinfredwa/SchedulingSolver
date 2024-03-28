@@ -107,8 +107,6 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
                     for t in range(total_blocks):  # Iterate over each time block
                         if y[i, c, s, t].solution_value() > 0:
                             print(f"Student {i} attends course {c+1} assigned to section {s+1} at time block {t+1}")
-                        elif y[i, c, s, t].solution_value() < 0:
-                            print(y[i, c, s, t].solution_value())
         for i in range(len(students)):
             for k in range(len(preferences[i])):
                 if x[i, k].solution_value() > 0:
@@ -118,17 +116,8 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
                 for t in range(total_blocks):
                     if z[c, s, t].solution_value() > 0:
                         print(f"Course {c+1} section {s+1} assigned at time block {t+1}")
-        
-        for i in range(len(students)):
-            sets=[x[i,s].solution_value() for s in range(len(preferences[i]))]
-            print(sets)
-            cor = [y[i, c, s, t].solution_value() for c in range(len(courses)) for s in range(sections[c]) for t in range(total_blocks)]
-            print("This student is taking ")
-            print(sum(cor))
-            print(" courses")
     else:
         print('No solution found.')
-        print(status)
 
 # Example data setup
 students = ["Student 1", "Student 2", "Student 3", "Student 4"]
