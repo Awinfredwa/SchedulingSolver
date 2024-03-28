@@ -28,18 +28,17 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
             for t in range(total_blocks):
                 z[c, s, t] = solver.BoolVar(f'z[{c},{s},{t}]')
 
-    # TODO: Fix this constraint
-    # Align the student-section-time assignment variables with the student-preference assignment variables
-    for i in range(len(students)):  # Iterate over each student
-        for k in range(len(preferences[i])):  # Iterate over each preference set for student i
-            for c in preferences[i][k]:  # Iterate over each course in the k-th preference set
-                # Create a list to hold the section-time assignment variables for course c
-                section_time_assignments = [y[i, c-1, s, t] for s in range(sections[c-1]) for t in range(total_blocks)]
-                
-                # Add a constraint that ensures the sum of section-time assignments for course c is equal to x[i, k]
-                # This means if x[i, k] = 1 (preference set k is selected), exactly one section-time assignment must be selected for course c
-                # If x[i, k] = 0, no section-time assignment should be selected for course c
-                solver.Add(solver.Sum(section_time_assignments) == 1 if x[i, k] else 0)
+    # s_c = {}
+    # for i in range(len(students)):
+    #     for k in range(len(courses)):
+    #         s_c[i, k] = solver.BoolVar(f's_c[{i},{k}]')
+
+
+    # for i in range(len(students)):
+    #     for k in range(len(preferences[i])):
+    #         solver.Add((solver.Sum(s_c[i,s] for s in range(len(courses)))==len(preferences[i][k]))if x[i,k] else True)
+
+
             
                 
     # Align the course section time block assignment variables with the student-section-time assignment variables
@@ -84,6 +83,22 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
             # The sum should be less than or equal to 1, ensuring only one course per time block
             solver.Add(solver.Sum(y[i, c-1, s, t] for c in courses for s in range(sections[c-1])) <= 1)
 
+        # TODO: Fix this constraint
+    # Align the student-section-time assignment variables with the student-preference assignment variables
+    for i in range(len(students)):  # Iterate over each student
+        for k in range(len(preferences[i])):  # Iterate over each preference set for student i
+            total_courses = [y[i, c, s, t] for c in range(len(courses)) for s in range(sections[c]) for t in range(total_blocks)]
+            solver.Add((solver.Sum(total_courses) == 4) if x[i,k]==1 else True)
+            for c in preferences[i][k]:  # Iterate over each course in the k-th preference set
+                # Create a list to hold the section-time assignment variables for course c
+                section_time_assignments = [y[i, c-1, s, t] for s in range(sections[c-1]) for t in range(total_blocks)]
+
+                # Add a constraint that ensures the sum of section-time assignments for course c is equal to x[i, k]
+                # This means if x[i, k] = 1 (preference set k is selected), exactly one section-time assignment must be selected for course c
+                # If x[i, k] = 0, no section-time assignment should be selected for course c
+
+                solver.Add((solver.Sum(section_time_assignments) == 1) if x[i,k]==1 else True)
+
     # Objective
     # Maximize the total number of students attending their first or second preferred set of courses
     solver.Maximize(solver.Sum([x[i, k] for i in range(len(students)) for k in range(2)]))
@@ -99,6 +114,8 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
                     for t in range(total_blocks):  # Iterate over each time block
                         if y[i, c, s, t].solution_value() > 0:
                             print(f"Student {i} attends course {c+1} assigned to section {s+1} at time block {t+1}")
+                        elif y[i, c, s, t].solution_value() < 0:
+                            print(y[i, c, s, t].solution_value())
         for i in range(len(students)):
             for k in range(len(preferences[i])):
                 if x[i, k].solution_value() > 0:
@@ -109,8 +126,16 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
                     if z[c, s, t].solution_value() > 0:
                         print(f"Course {c+1} section {s+1} assigned at time block {t+1}")
         
+        for i in range(len(students)):
+            sets=[x[i,s].solution_value() for s in range(len(preferences[i]))]
+            print(sets)
+            cor = [y[i, c, s, t].solution_value() for c in range(len(courses)) for s in range(sections[c]) for t in range(total_blocks)]
+            print("This student is taking ")
+            print(sum(cor))
+            print(" courses")
     else:
         print('No solution found.')
+        print(status)
 
 # Example data setup
 students = ["Student 1", "Student 2", "Student 3", "Student 4"]
