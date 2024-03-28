@@ -2,9 +2,9 @@ from ortools.linear_solver import pywraplp
 
 def create_course_schedule(students, courses, preferences, sections, section_capacity):
     total_blocks = 20  # 5 days * total_blocks blocks/day
-    M=50
+    M=50 # Big M parameter value, larger than maximum course possible but keep away from INT MAX
     # Initialize the solver
-    solver = pywraplp.Solver.CreateSolver('SCIP')
+    solver = pywraplp.Solver.CreateSolver('SAT')
 
     # Variables
     # Student Preference Assignment
@@ -72,13 +72,16 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
             # The sum should be less than or equal to 1, ensuring only one course per time block
             solver.Add(solver.Sum(y[i, c-1, s, t] for c in courses for s in range(sections[c-1])) <= 1)
 
-    #     # TODO: Fix this constraint
     # Align the student-section-time assignment variables with the student-preference assignment variables
     for i in range(len(students)):  # Iterate over each student
         for k in range(len(preferences[i])):  # Iterate over each preference set for student i
             total_courses = [y[i, c, s, t] for c in range(len(courses)) for s in range(sections[c]) for t in range(total_blocks)]
-            solver.Add(solver.Sum(total_courses) <=4+M*(1-x[i,k]))
-            solver.Add(solver.Sum(total_courses) >=4-M*(1-x[i,k]))
+
+            # Use big M method to introduce a constraint
+            # If x[i,k]=1, we force the sum of total courses of this student to the length of the preference set
+            # Otherwise we introduce a loose bound that's equivalent to no constraint.
+            solver.Add(solver.Sum(total_courses) <=len(preferences[i][k])+M*(1-x[i,k]))
+            solver.Add(solver.Sum(total_courses) >=len(preferences[i][k])-M*(1-x[i,k]))
             for c in preferences[i][k]:  # Iterate over each course in the k-th preference set
                 # Create a list to hold the section-time assignment variables for course c
                 section_time_assignments = [y[i, c-1, s, t] for s in range(sections[c-1]) for t in range(total_blocks)]
@@ -86,15 +89,17 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
                 # Add a constraint that ensures the sum of section-time assignments for course c is equal to x[i, k]
                 # This means if x[i, k] = 1 (preference set k is selected), exactly one section-time assignment must be selected for course c
                 # If x[i, k] = 0, no section-time assignment should be selected for course c
+
+
+                # Ensures a universal upper bound
                 solver.Add(solver.Sum(section_time_assignments) <= 1)
 
-                # Constraint ensuring that if x[i, k] = 1, then one section_time_assignment must be selected
+                # Constraint ensuring that if x[i, k] = 1, then one section_time_assignment must be selected, otherwise no constraint
                 solver.Add(solver.Sum(section_time_assignments) >= x[i, k])
-                # solver.Add((solver.Sum(section_time_assignments) == 1) if x[i,k]==1 else True)
 
     # Objective
     # Maximize the total number of students attending their first or second preferred set of courses
-    solver.Maximize(solver.Sum([x[i, k] for i in range(len(students)) for k in range(2)]))
+    solver.Maximize(solver.Sum([x[i, k] for i in range(len(students)) for k in range(1)]))
     
     # Solve
     status = solver.Solve()
