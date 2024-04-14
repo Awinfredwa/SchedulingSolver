@@ -97,6 +97,9 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
                 # Constraint ensuring that if x[i, k] = 1, then one section_time_assignment must be selected, otherwise no constraint
                 solver.Add(solver.Sum(section_time_assignments) >= x[i, k])
 
+    for i in range(len(students)):
+        solver.Add(solver.Sum(y[i, c, s, t] for c in range(len(courses)) for s in range(sections[c]) for t in range(total_blocks)) == len(preferences[i]))
+
     # Objective
     # Maximize the total number of students attending their first or second preferred set of courses
     solver.Maximize(solver.Sum([x[i, k] for i in range(len(students)) for k in range(1)]))
@@ -104,14 +107,24 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
     # Solve
     status = solver.Solve()
 
+    schedule = {}
+
     if status == pywraplp.Solver.OPTIMAL:
+        print("Solver status:", status)
         print('Solution:')
         for i in range(len(students)):  # Iterate over each student
+            student_schedule = []
             for c in range(len(courses)):  # Iterate over each course
                 for s in range(sections[c]):  # Iterate over each section of the course
                     for t in range(total_blocks):  # Iterate over each time block
                         if y[i, c, s, t].solution_value() > 0:
                             print(f"Student {i} attends course {c+1} assigned to section {s+1} at time block {t+1}")
+                            student_schedule.append({
+                                'course': c+1,
+                                'section': s+1,
+                                'time_block': t+1
+                            })
+            schedule[students[i]] = student_schedule
         for i in range(len(students)):
             for k in range(len(preferences[i])):
                 if x[i, k].solution_value() > 0:
@@ -122,7 +135,13 @@ def create_course_schedule(students, courses, preferences, sections, section_cap
                     if z[c, s, t].solution_value() > 0:
                         print(f"Course {c+1} section {s+1} assigned at time block {t+1}")
     else:
+        print("Solver status:", status)
         print('No solution found.')
+    
+    return {
+        'status': 'OPTIMAL' if status == pywraplp.Solver.OPTIMAL else 'NOT OPTIMAL',
+        'schedule': schedule
+    }
 
 # Example data setup
 students = ["Student 1", "Student 2", "Student 3", "Student 4"]
